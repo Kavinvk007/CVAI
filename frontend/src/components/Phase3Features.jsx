@@ -44,11 +44,34 @@ function AnalyticsDashboard({ token }) {
   useEffect(() => {
     axios.get(`${API_V3}/analytics/dashboard`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setData(res.data))
-      .catch(err => setError('Not authorized or error fetching analytics.'));
+      .catch(err => {
+        if (err.response) {
+          if (err.response.status === 403) {
+            setError("Admin access required. Please login with an admin account.");
+          } else if (err.response.status === 401) {
+            setError("Session expired. Please login again.");
+          } else if (err.response.status === 500) {
+            setError(`Backend Error: ${err.response.data?.detail || err.response.data?.message || "Internal Server Error"}`);
+          } else {
+            setError(err.response.data?.detail || "An error occurred fetching analytics.");
+          }
+        } else {
+          setError(err.message);
+        }
+      });
   }, [token]);
 
   if (error) return <div style={{color:'var(--danger)'}}>{error}</div>;
   if (!data) return <div>Loading Analytics...</div>;
+
+  if (data.total_resumes === 0 && Object.keys(data.events || {}).length === 0) {
+    return (
+      <div>
+        <h3>Admin Analytics Dashboard</h3>
+        <p style={{marginTop: '1rem', color: 'var(--text-muted)'}}>No analytics data yet. Use the app features to generate analytics.</p>
+      </div>
+    );
+  }
 
   return (
     <div>

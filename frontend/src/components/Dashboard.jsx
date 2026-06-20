@@ -56,7 +56,11 @@ function DashboardHome({ token, user }) {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAnalysis(res.data);
-      setAnalyzeStatus('');
+      if (res.data.error) {
+        setAnalyzeStatus('Warning: Backend Error: ' + res.data.error);
+      } else {
+        setAnalyzeStatus('');
+      }
     } catch (err) {
       setAnalyzeStatus('Analysis failed: ' + (err.response?.data?.detail || err.message));
     }

@@ -65,6 +65,7 @@ pip install -r requirements.txt
 cp .env.example .env # Add your GEMINI_API_KEY
 uvicorn main:app --reload --port 8000
 ```
+*(Optional) Seed a local demo admin account by running `python seed_admin.py`. Credentials: `admin@cvai.com` / `AdminPassword123!` (Use for local/demo testing only).*
 
 **Frontend:**
 ```bash

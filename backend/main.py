@@ -168,8 +168,8 @@ def analyze_resume(req: AnalysisRequest, current_user: models.User = Depends(get
     
     result = analyze_resume_with_ai(resume.extracted_text, req.job_description)
     
-    if "error" in result and len(result) == 1:
-        raise HTTPException(status_code=500, detail=result["error"])
+    if "error" in result:
+        logger.warning(f"AI Analysis returned an error (fallback used): {result['error']}")
 
     # Convert lists to strings for DB storage
     skills_str = json.dumps(result.get("skills", []))
