@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVAI - AI Resume Analyzer & Interview Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">CVAI</div>
+        <div class="nav-links">
+            <a href="#" id="nav-login">Login</a>
+            <a href="#" id="nav-register">Register</a>
+            <a href="#" id="nav-logout" style="display:none;">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Landing Page -->
+    <div id="landing-page" class="page active">
+        <header class="hero">
+            <h1>AI Resume Analyzer & Interview Assistant</h1>
+            <p>Upload your resume, get an ATS score, skill gap analysis, AI suggestions, and interview prep in seconds.</p>
+            <button class="btn primary-btn" id="get-started-btn">Get Started</button>
+        </header>
+    </div>
+
+    <!-- Auth Forms -->
+    <div id="auth-page" class="page">
+        <div class="auth-container">
+            <div id="login-form-container">
+                <h2>Login to CVAI</h2>
+                <form id="login-form">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                    <button type="submit" class="btn primary-btn">Login</button>
+                    <p>Don't have an account? <a href="#" id="switch-to-register">Register here</a></p>
+                </form>
+            </div>
+            <div id="register-form-container" style="display:none;">
+                <h2>Create an Account</h2>
+                <form id="register-form">
+                    <input type="text" id="register-name" placeholder="Full Name" required>
+                    <input type="email" id="register-email" placeholder="Email" required>
+                    <input type="password" id="register-password" placeholder="Password" required>
+                    <button type="submit" class="btn primary-btn">Register</button>
+                    <p>Already have an account? <a href="#" id="switch-to-login">Login here</a></p>
+                </form>
+            </div>
+            <div id="auth-error" class="error-msg"></div>
+        </div>
+    </div>
+
+    <!-- User Dashboard -->
+    <div id="dashboard-page" class="page">
+        <div class="dashboard-header">
+            <h2>Welcome back, <span id="user-name-display"></span></h2>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Upload Section -->
+            <div class="card upload-card">
+                <h3>Upload Resume</h3>
+                <form id="upload-form">
+                    <input type="file" id="resume-file" accept=".pdf" required>
+                    <button type="submit" class="btn secondary-btn" id="upload-btn">Upload PDF</button>
+                </form>
+                <div id="upload-status"></div>
+            </div>
+
+            <!-- Analysis Trigger Section -->
+            <div class="card analyze-card" id="analyze-section" style="display:none;">
+                <h3>Analyze Resume</h3>
+                <textarea id="job-description" placeholder="Paste Job Description here (Optional) for Job Match Score..."></textarea>
+                <button id="analyze-btn" class="btn primary-btn">Run AI Analysis</button>
+                <div id="analyze-status"></div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="results-grid" style="display:none;">
+            <div class="card score-card">
+                <h3>ATS Score</h3>
+                <div class="score-circle">
+                    <span id="ats-score-val">0</span>%
+                </div>
+                <div id="job-match-container" style="display:none; margin-top:1rem;">
+                    <h4>Job Match Score</h4>
+                    <div class="score-bar">
+                        <div id="job-match-bar" style="width: 0%;"></div>
+                    </div>
+                    <span id="job-match-val">0</span>%
+                </div>
+            </div>
+
+            <div class="card details-card">
+                <h3>Extracted Skills</h3>
+                <div id="skills-list" class="tags-container"></div>
+                
+                <h3 style="margin-top: 1rem;">Missing Skills</h3>
+                <div id="missing-skills-list" class="tags-container error-tags"></div>
+            </div>
+
+            <div class="card ai-suggestions-card">
+                <h3>AI Suggestions</h3>
+                <p id="ai-suggestions-text"></p>
+                
+                <h3 style="margin-top: 1rem;">Interview Questions</h3>
+                <ul id="interview-questions-list"></ul>
+            </div>
+            
+            <!-- Chatbot Section -->
+            <div class="card chat-card">
+                <h3>Resume Chatbot</h3>
+                <div id="chat-window" class="chat-window">
+                    <div class="chat-msg bot">Hi! Ask me anything about your uploaded resume.</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="e.g. What are my top skills?">
+                    <button id="chat-send-btn" class="btn primary-btn">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

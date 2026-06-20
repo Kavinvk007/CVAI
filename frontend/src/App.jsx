@@ -1,0 +1,43 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import Landing from './components/Landing';
+import Auth from './components/Auth';
+import Dashboard from './components/Dashboard';
+import Navbar from './components/Navbar';
+
+function App() {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [user, setUser] = useState({
+    id: localStorage.getItem('user_id'),
+    name: localStorage.getItem('name')
+  });
+
+  const handleLogin = (data) => {
+    localStorage.setItem('token', data.access_token);
+    localStorage.setItem('user_id', data.user_id);
+    localStorage.setItem('name', data.name);
+    setToken(data.access_token);
+    setUser({ id: data.user_id, name: data.name });
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    setToken(null);
+    setUser(null);
+  };
+
+  return (
+    <Router>
+      <Navbar token={token} onLogout={handleLogout} />
+      <div className="page active">
+        <Routes>
+          <Route path="/" element={!token ? <Landing /> : <Navigate to="/dashboard" />} />
+          <Route path="/auth" element={!token ? <Auth onLogin={handleLogin} /> : <Navigate to="/dashboard" />} />
+          <Route path="/dashboard/*" element={token ? <Dashboard token={token} user={user} /> : <Navigate to="/auth" />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
