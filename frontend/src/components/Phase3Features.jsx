@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useToast } from './Toast';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -46,7 +46,7 @@ function AnalyticsDashboard({ token }) {
   const { addToast } = useToast();
 
   useEffect(() => {
-    axios.get(`${API_V3}/analytics/dashboard`, { headers: { Authorization: `Bearer ${token}` } })
+    api.get(`/api/v3/analytics/dashboard`)
       .then(res => setData(res.data))
       .catch(err => {
         if (err.response) {
@@ -107,7 +107,7 @@ function ResumeVersions({ token, resumeId }) {
 
   useEffect(() => {
     if (!resumeId) return;
-    axios.get(`${API_V3}/resume/${resumeId}/versions`, { headers: { Authorization: `Bearer ${token}` } })
+    api.get(`/api/v3/resume/${resumeId}/versions`)
       .then(res => setVersions(res.data))
       .catch(err => console.log(err));
   }, [token, resumeId]);

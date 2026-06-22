@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import Phase2Features from './Phase2Features';
 import Phase3Features from './Phase3Features';
 import { useToast } from './Toast';
@@ -36,9 +36,7 @@ function DashboardHome({ token, user }) {
     formData.append('file', file);
 
     try {
-      const res = await axios.post(`${API_BASE}/resume/upload`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.post(`/resume/upload`, formData);
       setResumeId(res.data.resume_id);
       localStorage.setItem('current_resume_id', res.data.resume_id);
       addToast('Upload successful!', 'success');
@@ -52,11 +50,9 @@ function DashboardHome({ token, user }) {
     if (!resumeId) return;
     setIsAnalyzing(true);
     try {
-      const res = await axios.post(`${API_BASE}/analyze/resume`, {
+      const res = await api.post(`/analyze/resume`, {
         resume_id: resumeId,
         job_description: jobDescription
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       setAnalysis(res.data);
       if (res.data.error) {
@@ -78,11 +74,9 @@ function DashboardHome({ token, user }) {
     setChatInput('');
 
     try {
-      const res = await axios.post(`${API_BASE}/chat/resume`, {
+      const res = await api.post(`/chat/resume`, {
         resume_id: resumeId,
         message: msg
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       setChatMessages(prev => [...prev, { text: res.data.reply, sender: 'bot' }]);
     } catch (err) {

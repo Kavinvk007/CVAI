@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useToast } from './Toast';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -55,8 +55,7 @@ function CompareResumes({ token }) {
   const { addToast } = useToast();
 
   useEffect(() => {
-    // Fetch user's resumes
-    axios.get(`${API_BASE}/user/resumes`, { headers: { Authorization: `Bearer ${token}` } })
+    api.get(`/user/resumes`)
       .then(res => setResumes(res.data))
       .catch(err => console.log(err));
   }, [token]);
@@ -72,7 +71,7 @@ function CompareResumes({ token }) {
     }
     setLoading(true);
     try {
-      const res = await axios.post(`${API_V2}/compare`, { resume_ids: selectedIds, job_description: jd }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.post(`/api/v2/compare`, { resume_ids: selectedIds, job_description: jd });
       setData(res.data);
     } catch (err) {
       addToast("Error comparing resumes: " + (err.response?.data?.detail || err.message), "error");
@@ -133,7 +132,7 @@ function JobRecommendations({ token, resumeId }) {
   const handleFetch = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_V2}/recommend-jobs/${resumeId}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get(`/api/v2/recommend-jobs/${resumeId}`);
       setData(res.data);
     } catch (err) {
       addToast("Error fetching recommendations", "error");
@@ -176,7 +175,7 @@ function CoverLetter({ token, resumeId }) {
     if (!jd) return;
     setLoading(true);
     try {
-      const res = await axios.post(`${API_V2}/cover-letter`, { resume_id: resumeId, job_description: jd }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.post(`/api/v2/cover-letter`, { resume_id: resumeId, job_description: jd });
       setLetter(res.data.cover_letter);
     } catch (err) {
       addToast("Error generating cover letter", "error");
@@ -211,7 +210,7 @@ function LinkedInAnalyzer({ token }) {
     if (!profile) return;
     setLoading(true);
     try {
-      const res = await axios.post(`${API_V2}/linkedin-analyzer`, { profile_text: profile }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.post(`/api/v2/linkedin-analyzer`, { profile_text: profile });
       setData(res.data);
     } catch (err) {
       addToast("Error analyzing LinkedIn", "error");
@@ -260,9 +259,9 @@ function MockInterview({ token, resumeId }) {
     if (!answer) return;
     setLoading(true);
     try {
-      const res = await axios.post(`${API_V2}/mock-interview/evaluate`, {
+      const res = await api.post(`/api/v2/mock-interview/evaluate`, {
         resume_id: resumeId, job_description: jd, question, answer
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      });
       setFeedback(res.data);
     } catch (err) {
       addToast("Error evaluating answer", "error");
