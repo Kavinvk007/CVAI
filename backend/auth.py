@@ -64,14 +64,17 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     if not token:
         raise credentials_exception
 
+    from sqlalchemy import func
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
+        email_lower = email.lower().strip()
     except JWTError:
         raise credentials_exception
-    user = db.query(models.User).filter(models.User.email == email).first()
+    user = db.query(models.User).filter(func.lower(models.User.email) == email_lower).first()
     if user is None:
         raise credentials_exception
     return user

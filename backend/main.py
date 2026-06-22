@@ -107,15 +107,18 @@ class UserResponse(BaseModel):
     email: str
     is_admin: bool
 
+from sqlalchemy import func
+
 @app.post("/auth/register", response_model=UserResponse)
 @limiter.limit("5/minute")
 def register(request: Request, user: UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
+    email_lower = user.email.lower().strip()
+    db_user = db.query(models.User).filter(func.lower(models.User.email) == email_lower).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
     hashed_password = get_password_hash(user.password)
-    new_user = models.User(name=user.name, email=user.email, password_hash=hashed_password)
+    new_user = models.User(name=user.name.strip(), email=email_lower, password_hash=hashed_password)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -124,7 +127,8 @@ def register(request: Request, user: UserCreate, db: Session = Depends(get_db)):
 @app.post("/auth/login")
 @limiter.limit("10/minute")
 def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.email == form_data.username).first()
+    email_lower = form_data.username.lower().strip()
+    user = db.query(models.User).filter(func.lower(models.User.email) == email_lower).first()
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
