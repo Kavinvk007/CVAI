@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, F
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from database import engine, Base, get_db
+from database import engine, Base, get_db, SessionLocal
 import models
 import auth
 
@@ -25,6 +25,42 @@ limiter = Limiter(key_func=get_remote_address)
 
 # Create tables
 Base.metadata.create_all(bind=engine)
+
+def startup_admin_check():
+    db = SessionLocal()
+    try:
+        admin_email = "admin@cvai.com"
+        admin_password = "AdminPassword123!"
+        user = db.query(models.User).filter(models.User.email == admin_email).first()
+        needs_commit = False
+
+        if not user:
+            hashed_password = auth.get_password_hash(admin_password)
+            user = models.User(
+                name="System Admin",
+                email=admin_email,
+                password_hash=hashed_password,
+                is_admin=True
+            )
+            db.add(user)
+            needs_commit = True
+        else:
+            if not user.password_hash or not user.password_hash.startswith("$2b$"):
+                user.password_hash = auth.get_password_hash(admin_password)
+                needs_commit = True
+            if not user.is_admin:
+                user.is_admin = True
+                needs_commit = True
+
+        if needs_commit:
+            db.commit()
+        logger.info("Admin user verified/created successfully.")
+    except Exception as e:
+        logger.error(f"Error verifying admin user: {e}")
+    finally:
+        db.close()
+
+startup_admin_check()
 
 app = FastAPI(title="CVAI API")
 app.state.limiter = limiter
