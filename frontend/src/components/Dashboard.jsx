@@ -3,17 +3,19 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Phase2Features from './Phase2Features';
 import Phase3Features from './Phase3Features';
+import { useToast } from './Toast';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function DashboardHome({ token, user }) {
   const [file, setFile] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
   const [resumeId, setResumeId] = useState(localStorage.getItem('current_resume_id'));
   
   const [jobDescription, setJobDescription] = useState('');
-  const [analyzeStatus, setAnalyzeStatus] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
+  const { addToast } = useToast();
 
   const [chatInput, setChatInput] = useState('');
   const [chatMessages, setChatMessages] = useState([{ text: 'Hi! Ask me anything about your uploaded resume.', sender: 'bot' }]);
@@ -29,7 +31,7 @@ function DashboardHome({ token, user }) {
     e.preventDefault();
     if (!file) return;
 
-    setUploadStatus('Uploading...');
+    setIsUploading(true);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -39,15 +41,16 @@ function DashboardHome({ token, user }) {
       });
       setResumeId(res.data.resume_id);
       localStorage.setItem('current_resume_id', res.data.resume_id);
-      setUploadStatus('Upload successful!');
+      addToast('Upload successful!', 'success');
     } catch (err) {
-      setUploadStatus('Upload failed: ' + (err.response?.data?.detail || err.message));
+      addToast('Upload failed: ' + (err.response?.data?.detail || err.message), 'error');
     }
+    setIsUploading(false);
   };
 
   const handleAnalyze = async () => {
     if (!resumeId) return;
-    setAnalyzeStatus('Analyzing... (This may take a minute)');
+    setIsAnalyzing(true);
     try {
       const res = await axios.post(`${API_BASE}/analyze/resume`, {
         resume_id: resumeId,
@@ -57,13 +60,14 @@ function DashboardHome({ token, user }) {
       });
       setAnalysis(res.data);
       if (res.data.error) {
-        setAnalyzeStatus('Warning: Backend Error: ' + res.data.error);
+        addToast('Warning: Backend Error: ' + res.data.error, 'error');
       } else {
-        setAnalyzeStatus('');
+        addToast('Analysis Complete!', 'success');
       }
     } catch (err) {
-      setAnalyzeStatus('Analysis failed: ' + (err.response?.data?.detail || err.message));
+      addToast('Analysis failed: ' + (err.response?.data?.detail || err.message), 'error');
     }
+    setIsAnalyzing(false);
   };
 
   const handleSendChat = async () => {
@@ -96,17 +100,21 @@ function DashboardHome({ token, user }) {
           <h3>Upload Resume</h3>
           <form onSubmit={handleUpload}>
             <input type="file" accept=".pdf" onChange={e => setFile(e.target.files[0])} required />
-            <button type="submit" className="btn secondary-btn" disabled={uploadStatus === 'Uploading...'}>Upload PDF</button>
+            <button type="submit" className="btn secondary-btn" disabled={isUploading} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+              {isUploading && <span className="spinner spinner-sm"></span>}
+              {isUploading ? 'Uploading...' : 'Upload PDF'}
+            </button>
           </form>
-          <div style={{ marginTop: '1rem', color: uploadStatus.includes('success') ? 'var(--success)' : 'inherit' }}>{uploadStatus}</div>
         </div>
 
         {resumeId && (
           <div className="card analyze-card">
             <h3>Analyze Resume</h3>
             <textarea placeholder="Paste Job Description here (Optional)..." value={jobDescription} onChange={e => setJobDescription(e.target.value)} rows="4" />
-            <button onClick={handleAnalyze} className="btn primary-btn" disabled={analyzeStatus.includes('Analyzing')}>Run AI Analysis</button>
-            <div style={{ marginTop: '1rem' }}>{analyzeStatus}</div>
+            <button onClick={handleAnalyze} className="btn primary-btn" disabled={isAnalyzing} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+              {isAnalyzing && <span className="spinner spinner-sm"></span>}
+              {isAnalyzing ? 'Analyzing...' : 'Run AI Analysis'}
+            </button>
           </div>
         )}
       </div>

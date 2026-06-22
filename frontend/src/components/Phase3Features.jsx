@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useToast } from './Toast';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_V3 = `${API_BASE}/api/v3`;
 
-export default function Phase3Features({ token }) {
+export default function Phase3Features() {
   const [activeTab, setActiveTab] = useState('analytics');
   const resumeId = localStorage.getItem('current_resume_id');
+  const token = localStorage.getItem('token');
 
   const tabs = [
     { id: 'analytics', label: 'Admin Analytics' },
@@ -40,6 +42,7 @@ export default function Phase3Features({ token }) {
 function AnalyticsDashboard({ token }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
+  const { addToast } = useToast();
 
   useEffect(() => {
     axios.get(`${API_V3}/analytics/dashboard`, { headers: { Authorization: `Bearer ${token}` } })
@@ -62,7 +65,7 @@ function AnalyticsDashboard({ token }) {
   }, [token]);
 
   if (error) return <div style={{color:'var(--danger)'}}>{error}</div>;
-  if (!data) return <div>Loading Analytics...</div>;
+  if (!data) return <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}><span className="spinner spinner-sm"></span> Loading Analytics...</div>;
 
   if (data.total_resumes === 0 && Object.keys(data.events || {}).length === 0) {
     return (
@@ -140,10 +143,11 @@ function ResumeVersions({ token, resumeId }) {
 }
 
 function ReportsExports({ token, resumeId }) {
+  const { addToast } = useToast();
   
   const handlePdfExport = () => {
     if (!resumeId) {
-      alert("Please upload and analyze a resume first.");
+      addToast("Please upload and analyze a resume first.", "error");
       return;
     }
     window.open(`${API_V3}/export/pdf/${resumeId}?token=${token}`, '_blank');

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useToast } from './Toast';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_V2 = `${API_BASE}/api/v2`;
@@ -51,6 +52,7 @@ function CompareResumes({ token }) {
   const [jd, setJd] = useState('');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   useEffect(() => {
     // Fetch user's resumes
@@ -65,7 +67,7 @@ function CompareResumes({ token }) {
 
   const handleCompare = async () => {
     if (selectedIds.length < 2) {
-      alert("Please select at least 2 resumes to compare.");
+      addToast("Please select at least 2 resumes to compare.", "error");
       return;
     }
     setLoading(true);
@@ -73,7 +75,7 @@ function CompareResumes({ token }) {
       const res = await axios.post(`${API_V2}/compare`, { resume_ids: selectedIds, job_description: jd }, { headers: { Authorization: `Bearer ${token}` } });
       setData(res.data);
     } catch (err) {
-      alert("Error comparing resumes: " + (err.response?.data?.detail || err.message));
+      addToast("Error comparing resumes: " + (err.response?.data?.detail || err.message), "error");
     }
     setLoading(false);
   };
@@ -91,7 +93,8 @@ function CompareResumes({ token }) {
         ))}
       </div>
       <textarea placeholder="Paste Job Description to evaluate them against..." value={jd} onChange={e => setJd(e.target.value)} rows="3" style={{ width: '100%', marginBottom: '1rem' }} />
-      <button className="btn primary-btn" onClick={handleCompare} disabled={loading || selectedIds.length < 2}>
+      <button className="btn primary-btn" onClick={handleCompare} disabled={loading || selectedIds.length < 2} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+        {loading && <span className="spinner spinner-sm"></span>}
         {loading ? 'Comparing...' : 'Run Comparison'}
       </button>
 
@@ -125,6 +128,7 @@ function CompareResumes({ token }) {
 function JobRecommendations({ token, resumeId }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   const handleFetch = async () => {
     setLoading(true);
@@ -132,7 +136,7 @@ function JobRecommendations({ token, resumeId }) {
       const res = await axios.get(`${API_V2}/recommend-jobs/${resumeId}`, { headers: { Authorization: `Bearer ${token}` } });
       setData(res.data);
     } catch (err) {
-      alert("Error fetching recommendations");
+      addToast("Error fetching recommendations", "error");
     }
     setLoading(false);
   };
@@ -140,7 +144,8 @@ function JobRecommendations({ token, resumeId }) {
   return (
     <div>
       <h3>AI Job Recommendations</h3>
-      <button className="btn primary-btn" onClick={handleFetch} disabled={loading} style={{ margin: '1rem 0' }}>
+      <button className="btn primary-btn" onClick={handleFetch} disabled={loading} style={{ margin: '1rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        {loading && <span className="spinner spinner-sm"></span>}
         {loading ? 'Generating...' : 'Get Recommendations'}
       </button>
       {data?.roles && (
@@ -165,6 +170,7 @@ function CoverLetter({ token, resumeId }) {
   const [jd, setJd] = useState('');
   const [letter, setLetter] = useState('');
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   const handleGenerate = async () => {
     if (!jd) return;
@@ -173,7 +179,7 @@ function CoverLetter({ token, resumeId }) {
       const res = await axios.post(`${API_V2}/cover-letter`, { resume_id: resumeId, job_description: jd }, { headers: { Authorization: `Bearer ${token}` } });
       setLetter(res.data.cover_letter);
     } catch (err) {
-      alert("Error generating cover letter");
+      addToast("Error generating cover letter", "error");
     }
     setLoading(false);
   };
@@ -182,7 +188,8 @@ function CoverLetter({ token, resumeId }) {
     <div>
       <h3>Generate Cover Letter</h3>
       <textarea placeholder="Paste Job Description here..." value={jd} onChange={e => setJd(e.target.value)} rows="5" style={{ width: '100%', marginBottom: '1rem' }} />
-      <button className="btn primary-btn" onClick={handleGenerate} disabled={loading}>
+      <button className="btn primary-btn" onClick={handleGenerate} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        {loading && <span className="spinner spinner-sm"></span>}
         {loading ? 'Generating...' : 'Generate'}
       </button>
       {letter && (
@@ -198,6 +205,7 @@ function LinkedInAnalyzer({ token }) {
   const [profile, setProfile] = useState('');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   const handleAnalyze = async () => {
     if (!profile) return;
@@ -206,7 +214,7 @@ function LinkedInAnalyzer({ token }) {
       const res = await axios.post(`${API_V2}/linkedin-analyzer`, { profile_text: profile }, { headers: { Authorization: `Bearer ${token}` } });
       setData(res.data);
     } catch (err) {
-      alert("Error analyzing LinkedIn");
+      addToast("Error analyzing LinkedIn", "error");
     }
     setLoading(false);
   };
@@ -215,7 +223,8 @@ function LinkedInAnalyzer({ token }) {
     <div>
       <h3>LinkedIn Profile Analyzer</h3>
       <textarea placeholder="Paste your LinkedIn About section/Profile text here..." value={profile} onChange={e => setProfile(e.target.value)} rows="5" style={{ width: '100%', marginBottom: '1rem' }} />
-      <button className="btn primary-btn" onClick={handleAnalyze} disabled={loading}>
+      <button className="btn primary-btn" onClick={handleAnalyze} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        {loading && <span className="spinner spinner-sm"></span>}
         {loading ? 'Analyzing...' : 'Analyze Profile'}
       </button>
       {data && (
@@ -245,6 +254,7 @@ function MockInterview({ token, resumeId }) {
   const [answer, setAnswer] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   const handleSubmit = async () => {
     if (!answer) return;
@@ -255,7 +265,7 @@ function MockInterview({ token, resumeId }) {
       }, { headers: { Authorization: `Bearer ${token}` } });
       setFeedback(res.data);
     } catch (err) {
-      alert("Error evaluating answer");
+      addToast("Error evaluating answer", "error");
     }
     setLoading(false);
   };
@@ -271,7 +281,8 @@ function MockInterview({ token, resumeId }) {
       </div>
 
       <textarea placeholder="Type your answer here..." value={answer} onChange={e => setAnswer(e.target.value)} rows="5" style={{ width: '100%', marginBottom: '1rem' }} />
-      <button className="btn primary-btn" onClick={handleSubmit} disabled={loading}>
+      <button className="btn primary-btn" onClick={handleSubmit} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        {loading && <span className="spinner spinner-sm"></span>}
         {loading ? 'Evaluating...' : 'Submit Answer'}
       </button>
 

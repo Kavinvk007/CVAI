@@ -9,7 +9,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel('gemini-3.5-flash')
 else:
     model = None
     print("Warning: GEMINI_API_KEY is not set.")
@@ -58,9 +58,9 @@ def analyze_resume_with_ai(resume_text: str, job_description: str = "") -> dict:
     Return the analysis strictly as a JSON object with the following keys:
     - "skills": a list of strings representing the skills found in the resume.
     - "missing_skills": a list of strings representing skills missing from the resume based on the job description (if provided).
-    - "ats_score": a number from 0 to 100 indicating how well the resume is written.
-    - "job_match_score": a number from 0 to 100 indicating how well the resume matches the job description (0 if no job description).
-    - "suggestions": a string with 2-3 sentences on how to improve the resume.
+    - "ats_score": a number from 0 to 100 indicating how well the resume is written. Be strict and realistic; a 100 is almost impossible.
+    - "job_match_score": a number from 0 to 100 indicating how well the resume matches the job description (0 if no job description). Be critical based on missing skills.
+    - "suggestions": a string with 2-3 sentences on how to improve the resume, being specific to the text.
     - "interview_questions": a list of 3-5 potential interview questions based on the resume.
 
     Ensure the response is valid JSON. Do not include markdown formatting like ```json or ```.
@@ -80,4 +80,5 @@ def analyze_resume_with_ai(resume_text: str, job_description: str = "") -> dict:
         return data
     except Exception as e:
         print(f"Error in Gemini AI analysis: {e}")
-        return fallback_analysis(str(e))
+        # If model is configured, do not fallback. Fail loudly so the user knows there is an API issue.
+        return {"error": f"AI Analysis Failed: {str(e)}"}

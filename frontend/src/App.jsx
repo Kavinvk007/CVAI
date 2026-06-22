@@ -4,6 +4,7 @@ import Landing from './components/Landing';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
+import { ToastProvider } from './components/Toast';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -27,16 +28,18 @@ function App() {
   };
 
   return (
-    <Router>
-      <Navbar token={token} onLogout={handleLogout} />
-      <div className="page active">
-        <Routes>
-          <Route path="/" element={!token ? <Landing /> : <Navigate to="/dashboard" />} />
-          <Route path="/auth" element={!token ? <Auth onLogin={handleLogin} /> : <Navigate to="/dashboard" />} />
-          <Route path="/dashboard/*" element={token ? <Dashboard token={token} user={user} /> : <Navigate to="/auth" />} />
-        </Routes>
-      </div>
-    </Router>
+    <ToastProvider>
+      <Router>
+        <Navbar token={token} onLogout={handleLogout} />
+        <div className="page active">
+          <Routes>
+            <Route path="/" element={!token ? <Landing /> : <Navigate to="/dashboard" />} />
+            <Route path="/auth" element={!token ? <Auth onLogin={handleLogin} /> : <Navigate to="/dashboard" />} />
+            <Route path="/dashboard/*" element={token ? <Dashboard token={token} user={user} /> : <Navigate to="/auth" />} />
+          </Routes>
+        </div>
+      </Router>
+    </ToastProvider>
   );
 }
 
