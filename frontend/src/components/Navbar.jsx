@@ -4,7 +4,12 @@ import { Link } from 'react-router-dom';
 function Navbar({ token, onLogout }) {
   return (
     <nav className="navbar">
-      <div className="logo"><Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>CVAI v2</Link></div>
+      <div className="logo">
+        <Link to="/" style={{ color: 'inherit', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img src="/logo1.png" alt="CVAI Logo" style={{ width: '36px', height: '36px' }} />
+          CVAI
+        </Link>
+      </div>
       <div className="nav-links">
         {token ? (
           <>
