@@ -12,17 +12,25 @@ CVAI is a full-stack, enterprise-grade web application designed to empower job s
 
 ## 📸 Interface Showcases
 
-![Landing Page](assets/screenshots/landing_page.png)
+![Landing Page](assets/screenshots/landing-page.png)
+
 *Modern, responsive landing page.*
 
-![Dashboard View](assets/screenshots/dashboard.png)
-*Interactive dashboard with real-time analytics and resume uploads.*
+![Analytics Dashboard](assets/screenshots/analytics-dashboard.png)
 
-![ATS Score and Analysis](assets/screenshots/ats_analysis.png)
-*Detailed breakdown of ATS score, missing skills, and AI suggestions.*
+*Interactive dashboard with analytics and resume uploads.*
 
-![Resume Chatbot](assets/screenshots/resume_chatbot.png)
+![ATS Analysis](assets/screenshots/ats-analysis.png)
+
+*Detailed breakdown of ATS score, skills, and AI suggestions.*
+
+![Resume Chatbot](assets/screenshots/resume-chatbot.png)
+
 *Interactive RAG chatbot querying the resume context.*
+
+![Job Recommendations](assets/screenshots/job-recommendations.png)
+
+*AI-powered job recommendations and learning roadmap.*
 
 ## ✨ Feature Showcase
 
