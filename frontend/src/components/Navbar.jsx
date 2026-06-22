@@ -5,9 +5,8 @@ function Navbar({ token, onLogout }) {
   return (
     <nav className="navbar">
       <div className="logo">
-        <Link to="/" style={{ color: 'inherit', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/logo1.png" alt="CVAI Logo" style={{ width: '36px', height: '36px' }} />
-          CVAI
+        <Link to="/" style={{ color: 'inherit', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <img src="/logo3.png" alt="CVAI Logo" style={{ height: '42px', width: 'auto', mixBlendMode: 'screen' }} />
         </Link>
       </div>
       <div className="nav-links">
