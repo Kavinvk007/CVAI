@@ -18,11 +18,11 @@ export default function Phase3Features() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem', flexWrap: 'wrap' }}>
+      <div className="feature-tabs-container">
         {tabs.map(t => (
           <button 
             key={t.id} 
-            className={`btn ${activeTab === t.id ? 'primary-btn' : 'secondary-btn'}`}
+            className={`feature-tab ${activeTab === t.id ? 'active' : ''}`}
             onClick={() => setActiveTab(t.id)}
           >
             {t.label}

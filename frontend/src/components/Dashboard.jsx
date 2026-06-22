@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Phase2Features from './Phase2Features';
 import Phase3Features from './Phase3Features';
@@ -152,14 +152,31 @@ function DashboardHome({ token, user }) {
 }
 
 function Dashboard({ token, user }) {
+  const location = useLocation();
+  
+  const isActive = (path) => {
+    if (path === '/dashboard' && location.pathname === '/dashboard') return true;
+    if (path !== '/dashboard' && location.pathname.startsWith(path)) return true;
+    return false;
+  };
+
   return (
-    <div style={{ display: 'flex', gap: '2rem' }}>
-      <div style={{ width: '250px', display: 'flex', flexDirection: 'column', gap: '1rem', borderRight: '1px solid rgba(255,255,255,0.1)', paddingRight: '1rem' }}>
-        <Link to="/dashboard" className="btn secondary-btn" style={{textAlign:'center', textDecoration:'none'}}>Home</Link>
-        <Link to="/dashboard/features" className="btn secondary-btn" style={{textAlign:'center', textDecoration:'none'}}>Advanced Features</Link>
-        <Link to="/dashboard/analytics" className="btn secondary-btn" style={{textAlign:'center', textDecoration:'none'}}>Analytics & Exports</Link>
-      </div>
-      <div style={{ flex: 1 }}>
+    <div className="dashboard-layout">
+      <nav className="sidebar-nav">
+        <Link to="/dashboard" className={`sidebar-link ${isActive('/dashboard') ? 'active' : ''}`}>
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Home</span>
+        </Link>
+        <Link to="/dashboard/features" className={`sidebar-link ${isActive('/dashboard/features') ? 'active' : ''}`}>
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          <span>Advanced Features</span>
+        </Link>
+        <Link to="/dashboard/analytics" className={`sidebar-link ${isActive('/dashboard/analytics') ? 'active' : ''}`}>
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <span>Analytics & Exports</span>
+        </Link>
+      </nav>
+      <div className="dashboard-content">
         <Routes>
           <Route path="/" element={<DashboardHome token={token} user={user} />} />
           <Route path="/features" element={<Phase2Features token={token} />} />
