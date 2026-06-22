@@ -10,15 +10,17 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState({
     id: localStorage.getItem('user_id'),
-    name: localStorage.getItem('name')
+    name: localStorage.getItem('name'),
+    is_admin: localStorage.getItem('is_admin') === 'true'
   });
 
   const handleLogin = (data) => {
     localStorage.setItem('token', data.access_token);
     localStorage.setItem('user_id', data.user_id);
     localStorage.setItem('name', data.name);
+    localStorage.setItem('is_admin', data.is_admin);
     setToken(data.access_token);
-    setUser({ id: data.user_id, name: data.name });
+    setUser({ id: data.user_id, name: data.name, is_admin: data.is_admin });
   };
 
   const handleLogout = () => {

@@ -138,7 +138,8 @@ def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db
         "refresh_token": refresh_token,
         "token_type": "bearer",
         "user_id": user.id,
-        "name": user.name
+        "name": user.name,
+        "is_admin": user.is_admin
     }
 
 # --- RESUME ROUTES ---

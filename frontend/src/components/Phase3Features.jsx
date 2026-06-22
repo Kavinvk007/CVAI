@@ -6,15 +6,16 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_V3 = `${API_BASE}/api/v3`;
 
 export default function Phase3Features() {
-  const [activeTab, setActiveTab] = useState('analytics');
+  const is_admin = localStorage.getItem('is_admin') === 'true';
+  const [activeTab, setActiveTab] = useState(is_admin ? 'analytics' : 'versions');
   const resumeId = localStorage.getItem('current_resume_id');
   const token = localStorage.getItem('token');
 
   const tabs = [
-    { id: 'analytics', label: 'Admin Analytics' },
+    { id: 'analytics', label: 'Admin Analytics', adminOnly: true },
     { id: 'versions', label: 'Resume Versions' },
     { id: 'exports', label: 'Reports & Exports' },
-  ];
+  ].filter(t => !t.adminOnly || is_admin);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
