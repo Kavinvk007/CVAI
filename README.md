@@ -127,6 +127,6 @@ Kavin Vijayakumar
 
 GitHub: https://github.com/Kavinvk007
 
-LinkedIn:[ https://www.linkedin.com/in/kavin-vk](https://www.linkedin.com/in/kavin-vk-3a6090315)
+LinkedIn: https://www.linkedin.com/in/kavin-vk-3a6090315
 
 
