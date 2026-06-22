@@ -3,116 +3,129 @@
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
 ![React](https://img.shields.io/badge/React-18.2.0-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100.0-teal)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.110.0-teal)
 ![Python](https://img.shields.io/badge/Python-3.11-yellow)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
 
-CVAI is a full-stack, enterprise-grade web application designed to empower job seekers. It analyzes resumes, generates ATS scores, identifies skill gaps, offers AI-powered suggestions, and provides interactive interview preparation using an advanced RAG chatbot.
+CVAI is a full-stack AI-powered Resume Analyzer and Interview Assistant built using React, FastAPI, Google Gemini AI, ChromaDB, and modern DevOps practices. The platform helps job seekers analyze resumes, improve ATS compatibility, identify skill gaps, prepare for interviews, and receive AI-powered career guidance.
 
-##  Interface Showcases
+## Live Demo
+
+Frontend: https://cvai-one.vercel.app
+
+Backend API: https://cvai-cws9.onrender.com
+
+API Documentation: https://cvai-cws9.onrender.com/docs
+
+## Screenshots
 
 ![Landing Page](assets/screenshots/landing-page.png)
 
-*Modern, responsive landing page.*
-
 ![Analytics Dashboard](assets/screenshots/analytics-dashboard.png)
-
-*Interactive dashboard with analytics and resume uploads.*
 
 ![ATS Analysis](assets/screenshots/ats-analysis.png)
 
-*Detailed breakdown of ATS score, skills, and AI suggestions.*
-
 ![Resume Chatbot](assets/screenshots/resume-chatbot.png)
-
-*Interactive RAG chatbot querying the resume context.*
 
 ![Job Recommendations](assets/screenshots/job-recommendations.png)
 
-*AI-powered job recommendations and learning roadmap.*
+## Features
 
-##  Feature Showcase
+### Resume Analysis
 
-- **Advanced Resume Parsing**: Extracts precise text formatting from PDF resumes.
-- **Google Gemini AI Integration**: Analyzes resumes against specific Job Descriptions to generate ATS scores and missing skills.
-- **RAG-Powered Chatbot**: Chat securely with your resume using ChromaDB for highly contextualized answers.
-- **Role-Based Access Control**: Separate, secure admin dashboards to monitor user activity and system analytics.
-- **Automated Document Generation**: Export custom cover letters and updated resumes in PDF and CSV formats.
-- **Modern Responsive UI**: Built with React and Vite for a seamless, dark-themed user experience across all devices.
+* ATS Score Calculation
+* Resume Parsing and Skill Extraction
+* Missing Skill Detection
+* Job Description Matching
+* AI Resume Improvement Suggestions
 
-##  System Architecture
+### AI Features
+
+* Google Gemini AI Integration
+* Resume RAG Chatbot
+* Cover Letter Generator
+* LinkedIn Profile Analyzer
+* Mock Interview Assistant
+* Personalized Job Recommendations
+
+### Analytics & Administration
+
+* Admin Dashboard
+* Resume Version Tracking
+* Usage Analytics
+* PDF Export Reports
+* CSV Export Functionality
+* Role-Based Access Control (RBAC)
+
+### Security
+
+* JWT Authentication
+* Refresh Tokens
+* Rate Limiting
+* Secure File Upload Validation
+* Protected Admin Routes
+
+### DevOps
+
+* Dockerized Architecture
+* GitHub Actions CI/CD
+* Vercel Deployment
+* Render Deployment
+* Environment Variable Management
+
+## Architecture
 
 ```mermaid
-graph TD;
-    Client[Web Browser - React/Vite] -->|HTTPS/REST| Nginx[Nginx Reverse Proxy];
-    
-    subgraph AWS EC2 Instance
-        Nginx -->|Proxy Pass| FastAPI[FastAPI Backend];
-        FastAPI -->|Read/Write| SQLite[(Relational DB)];
-        FastAPI -->|Vector Embeddings| ChromaDB[(ChromaDB Vector Store)];
-    end
-    
-    FastAPI <-->|API Calls| Gemini[Google Gemini AI API];
+graph TD
+    User[User Browser] --> Frontend[Vercel - React Frontend]
+    Frontend --> Backend[Render - FastAPI Backend]
+    Backend --> SQLite[(SQLite Database)]
+    Backend --> ChromaDB[(ChromaDB Vector Store)]
+    Backend --> Gemini[Google Gemini AI]
 ```
 
-##  Setup Guides
+## Tech Stack
 
-### 1. Prerequisites
-- [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/)
-- A Google Gemini API Key from [Google AI Studio](https://aistudio.google.com/).
+**Frontend**
 
-### 2. Local Setup (Without Docker)
+* React
+* Vite
+* JavaScript
+* CSS
 
-**Backend:**
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-pip install -r requirements.txt
-cp .env.example .env # Add your GEMINI_API_KEY
-uvicorn main:app --reload --port 8000
-```
-*(Optional) Seed a local demo admin account by running `python seed_admin.py`. Credentials: `admin@cvai.com` / `AdminPassword123!` (Use for local/demo testing only).*
+**Backend**
 
-**Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev
-```
+* FastAPI
+* Python 3.11
+* SQLAlchemy
 
-### 3. Docker Production Setup (Recommended)
-Navigate to the root directory where `docker-compose.yml` is located:
-```bash
-cp backend/.env.example backend/.env # Add your GEMINI_API_KEY
-docker-compose up -d --build
-```
-The application will be served via Nginx on `http://localhost`.
+**AI**
 
-### 4. AWS Deployment Guide
-1. Launch an Ubuntu EC2 instance. Open ports `80` and `443`.
-2. Install Docker and Docker Compose on the instance.
-3. Configure your GitHub Repository Secrets: `EC2_HOST`, `EC2_USER`, `EC2_SSH_KEY`, `GEMINI_API_KEY`, `SECRET_KEY`, `DB_PASSWORD`.
-4. Our GitHub Actions pipeline will handle the rest!
+* Google Gemini AI
+* ChromaDB
 
-##  CI/CD Pipeline
-This repository utilizes **GitHub Actions** for Continuous Deployment. 
-Any push to the `main` branch triggers `.github/workflows/deploy.yml`. The action connects to the EC2 instance via SSH, pulls the latest code, generates the production `.env` from GitHub Secrets, and rebuilds the Docker containers with zero downtime using Docker Compose.
+**Database**
 
-##  Security & Rate Limiting
-- **JWT Authentication**: Short-lived access tokens with secure refresh token flows.
-- **File Validation**: Strict PDF-only validation with 5MB size limits.
-- **Rate Limiting**: Integrated `slowapi` to prevent abuse (e.g., 5 requests/minute for auth endpoints).
-- **CORS Handling**: Properly configured origin policies in FastAPI.
+* SQLite
 
-##  Testing Results
-The CVAI application maintains a **100/100 Deployment Readiness Score** based on comprehensive End-to-End functional testing.
-- **Backend**: 18/18 Core APIs (Auth, Upload, Chatbot, AI Analysis, Export, Admin, RBAC) fully validated.
-- **Frontend**: 10/10 UI Components fully validated with successful production builds.
-- **Bugs Found**: 0
+**DevOps**
 
-##  Future Roadmap
-- **Phase 6**: Real-time WebSocket Chatbots and Voice AI interview integration.
-- **Phase 7**: Support for multiple LLM providers (Anthropic Claude, OpenAI).
-- **Phase 8**: Kubernetes deployment scaling and Prometheus/Grafana monitoring.
+* Docker
+* GitHub Actions
+* Vercel
+* Render
+
+## Deployment Readiness
+
+* Backend APIs Passed: 18/18
+* Frontend Components Passed: 10/10
+* Deployment Readiness Score: 100/100
+
+## Developer
+
+Kavin Vijayakumar
+
+GitHub: https://github.com/Kavinvk007
+
+LinkedIn: https://www.linkedin.com/in/kavin-vk
+
