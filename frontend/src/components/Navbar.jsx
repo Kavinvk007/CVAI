@@ -17,8 +17,8 @@ function Navbar({ token, onLogout }) {
           </>
         ) : (
           <>
-            <Link to="/auth?mode=login">Login</Link>
-            <Link to="/auth?mode=register">Register</Link>
+            <Link to="/auth?mode=login" className="nav-login">Login</Link>
+            <Link to="/auth?mode=register" className="nav-register">Register</Link>
           </>
         )}
       </div>

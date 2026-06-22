@@ -394,3 +394,9 @@ ul#interview-questions-list li {
         padding: 1rem;
     }
 }
+
+/* Auth Nav Link Hovers */
+.nav-links a.nav-login { transition: all 0.3s ease; }
+.nav-links a.nav-login:hover { color: #6EA8FE; transform: translateY(-1px); }
+.nav-links a.nav-register { transition: all 0.3s ease; }
+.nav-links a.nav-register:hover { color: #7C5CFF; transform: translateY(-1px); }
