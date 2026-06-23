@@ -1,40 +1,63 @@
 # CVAI - AI Resume Analyzer & Interview Assistant
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
-![React](https://img.shields.io/badge/React-18.2.0-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.110.0-teal)
-![Python](https://img.shields.io/badge/Python-3.11-yellow)
-![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
 
-CVAI is a full-stack AI-powered Resume Analyzer and Interview Assistant built using React, FastAPI, Google Gemini AI, ChromaDB, and modern DevOps practices. The platform helps job seekers analyze resumes, improve ATS compatibility, identify skill gaps, prepare for interviews, and receive AI-powered career guidance.
+
+
+
+\
+
+CVAI is a full-stack AI-powered Resume Analyzer and Interview Assistant built using React, FastAPI, Google Gemini AI, ChromaDB, and modern DevOps practices. The platform helps job seekers analyze resumes, improve ATS compatibility, identify skill gaps, prepare for interviews, generate cover letters, receive AI-powered job recommendations, and gain career insights through an intelligent AI assistant.
+
+---
 
 ## Live Demo
 
-Frontend: https://cvai-one.vercel.app
+**Frontend:** https://cvai-one.vercel.app
 
-Backend API: https://cvai-cws9.onrender.com
+**Backend API:** https://cvai-cws9.onrender.com
 
-API Documentation: https://cvai-cws9.onrender.com/docs
+**API Documentation:** https://cvai-cws9.onrender.com/docs
+
+---
 
 ## Screenshots
 
-![Landing Page](assets/screenshots/landing-page.png)
+### Landing Page
 
-![Analytics Dashboard](assets/screenshots/analytics-dashboard.png)
+### Analytics Dashboard
 
-![ATS Analysis](assets/screenshots/ats-analysis.png)
+### ATS Analysis
 
-![Resume Chatbot](assets/screenshots/resume-chatbot.png)
+### Resume Chatbot
 
-![Job Recommendations](assets/screenshots/job-recommendations.png)
+### Job Recommendations
+
+---
+
+## Key Highlights
+
+* AI-powered ATS Resume Analysis
+* Resume Skill Gap Detection
+* Personalized Job Recommendations
+* Resume RAG Chatbot
+* AI Cover Letter Generator
+* LinkedIn Profile Analyzer
+* AI Mock Interview Assistant
+* Resume Version Tracking
+* Admin Analytics Dashboard
+* JWT Authentication & RBAC
+* Dockerized Deployment Pipeline
+* CI/CD with GitHub Actions
+* Responsive SaaS-style User Interface
+
+---
 
 ## Features
 
 ### Resume Analysis
 
 * ATS Score Calculation
-* Resume Parsing and Skill Extraction
+* Resume Parsing & Skill Extraction
 * Missing Skill Detection
 * Job Description Matching
 * AI Resume Improvement Suggestions
@@ -45,7 +68,7 @@ API Documentation: https://cvai-cws9.onrender.com/docs
 * Resume RAG Chatbot
 * Cover Letter Generator
 * LinkedIn Profile Analyzer
-* Mock Interview Assistant
+* AI Mock Interview Assistant
 * Personalized Job Recommendations
 
 ### Analytics & Administration
@@ -73,6 +96,8 @@ API Documentation: https://cvai-cws9.onrender.com/docs
 * Render Deployment
 * Environment Variable Management
 
+---
+
 ## Architecture
 
 ```mermaid
@@ -86,47 +111,87 @@ graph TD
 
 ## Tech Stack
 
-**Frontend**
+### Frontend
 
 * React
 * Vite
 * JavaScript
-* CSS
+* CSS3
+* Axios
 
-**Backend**
+### Backend
 
 * FastAPI
 * Python 3.11
 * SQLAlchemy
+* JWT Authentication
 
-**AI**
+### AI & Machine Learning
 
 * Google Gemini AI
 * ChromaDB
+* RAG (Retrieval Augmented Generation)
 
-**Database**
+### Database
 
 * SQLite
 
-**DevOps**
+### DevOps & Deployment
 
 * Docker
 * GitHub Actions
 * Vercel
 * Render
 
+---
+
 ## Deployment Readiness
 
-* Backend APIs Passed: 18/18
-* Frontend Components Passed: 10/10
-* Deployment Readiness Score: 100/100
+| Category              | Status       |
+| --------------------- | ------------ |
+| Backend APIs          | 18/18 Passed |
+| Frontend Components   | 10/10 Passed |
+| Deployment Readiness  | 100/100      |
+| Production Deployment | Completed    |
+| Mobile Responsive UI  | Completed    |
+
+---
+
+## Project Status
+
+ Production Deployed
+
+ Frontend Hosted on Vercel
+
+ Backend Hosted on Render
+
+ Responsive SaaS UI
+
+ AI-Powered Career Assistant
+
+ Portfolio Ready
+
+---
+
+## Future Enhancements
+
+* Real-Time Job Search Integration
+* Voice-Based Mock Interviews
+* Resume Builder
+* AI Portfolio Generator
+* LinkedIn Auto Optimization
+* AI Career Roadmap Generator
+
+---
 
 ## Developer
 
-Kavin Vijayakumar
+### Kavin Vijayakumar
 
 GitHub: https://github.com/Kavinvk007
 
 LinkedIn: https://www.linkedin.com/in/kavin-vk-3a6090315
 
+---
 
+ If you found this project useful, consider giving it a star on GitHub!
