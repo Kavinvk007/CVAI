@@ -4,6 +4,7 @@ import Landing from './components/Landing';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import { ToastProvider } from './components/Toast';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
             <Route path="/dashboard/*" element={token ? <Dashboard token={token} user={user} /> : <Navigate to="/auth" />} />
           </Routes>
         </div>
+        <Footer />
       </Router>
     </ToastProvider>
   );

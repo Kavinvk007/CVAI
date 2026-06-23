@@ -66,7 +66,21 @@ function AnalyticsDashboard({ token }) {
   }, [token]);
 
   if (error) return <div style={{color:'var(--danger)'}}>{error}</div>;
-  if (!data) return <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}><span className="spinner spinner-sm"></span> Loading Analytics...</div>;
+  if (!data) return (
+    <div>
+      <h3>Admin Analytics Dashboard</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+        <div className="glass-card" style={{ padding: '1.5rem' }}>
+          <div className="skeleton-loader skeleton-text title"></div>
+          <div className="skeleton-loader skeleton-box" style={{ height: '40px' }}></div>
+        </div>
+        <div className="glass-card" style={{ padding: '1.5rem' }}>
+          <div className="skeleton-loader skeleton-text title"></div>
+          <div className="skeleton-loader skeleton-box" style={{ height: '40px' }}></div>
+        </div>
+      </div>
+    </div>
+  );
 
   if (data.total_resumes === 0 && Object.keys(data.events || {}).length === 0) {
     return (
@@ -104,13 +118,18 @@ function AnalyticsDashboard({ token }) {
 
 function ResumeVersions({ token, resumeId }) {
   const [versions, setVersions] = useState([]);
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (!resumeId) return;
     api.get(`/api/v3/resume/${resumeId}/versions`)
       .then(res => setVersions(res.data))
-      .catch(err => console.log(err));
-  }, [token, resumeId]);
+      .catch(err => {
+        if (err.response?.status !== 401) {
+          addToast("Failed to fetch versions", "error");
+        }
+      });
+  }, [token, resumeId, addToast]);
 
   if (!resumeId) return <div>Please upload a resume first to view its versions.</div>;
 

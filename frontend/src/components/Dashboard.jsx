@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../api';
-import Phase2Features from './Phase2Features';
-import Phase3Features from './Phase3Features';
 import { useToast } from './Toast';
+
+const Phase2Features = lazy(() => import('./Phase2Features'));
+const Phase3Features = lazy(() => import('./Phase3Features'));
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -97,17 +98,54 @@ function DashboardHome({ token, user }) {
 
   return (
     <div>
-      <div className="dashboard-header">
-        <h2>Welcome back, <span>{user?.name}</span></h2>
+      <div className="dashboard-header" style={{ marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem' }}>Welcome back, <span className="logo">{user?.name}</span> 👋</h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Resume Analysis Dashboard</p>
+      </div>
+
+      <div className="stats-grid">
+        <div className="glass-card stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--primary)' }}>📄</div>
+          <div className="stat-content">
+            <h4>Resumes Uploaded</h4>
+            <p className="stat-value">12</p>
+          </div>
+        </div>
+        <div className="glass-card stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--success)' }}>⚡</div>
+          <div className="stat-content">
+            <h4>ATS Analyses</h4>
+            <p className="stat-value">34</p>
+          </div>
+        </div>
+        <div className="glass-card stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(59, 130, 246, 0.2)', color: 'var(--secondary)' }}>💼</div>
+          <div className="stat-content">
+            <h4>Job Recs Generated</h4>
+            <p className="stat-value">8</p>
+          </div>
+        </div>
+        <div className="glass-card stat-card">
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b' }}>🎤</div>
+          <div className="stat-content">
+            <h4>Mock Interviews</h4>
+            <p className="stat-value">5</p>
+          </div>
+        </div>
       </div>
       <div className="dashboard-grid">
-        <div className="card upload-card">
-          <h3>Upload Resume</h3>
+        <div className="card upload-card" style={{ position: 'relative', overflow: 'hidden' }}>
+          <h3 style={{ marginBottom: '1.5rem' }}>Upload Resume</h3>
           <form onSubmit={handleUpload}>
-            <input type="file" accept=".pdf" onChange={e => setFile(e.target.files[0])} required />
-            <button type="submit" className="btn secondary-btn" disabled={isUploading} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
-              {isUploading && <span className="spinner spinner-sm"></span>}
-              {isUploading ? 'Uploading...' : 'Upload PDF'}
+            <div className="file-upload-wrapper">
+              <input type="file" id="resume-upload" accept=".pdf" onChange={e => setFile(e.target.files[0])} required className="hidden-file-input" />
+              <label htmlFor="resume-upload" className="file-upload-label">
+                <div className="upload-icon">📁</div>
+                <span className="upload-text">{file ? file.name : 'Drag & drop or click to select PDF'}</span>
+              </label>
+            </div>
+            <button type="submit" className="btn primary-btn" disabled={isUploading || !file} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center', marginTop: '1rem' }}>
+              {isUploading ? <><span className="spinner spinner-sm"></span> Uploading...</> : 'Upload PDF'}
             </button>
           </form>
         </div>
@@ -123,6 +161,14 @@ function DashboardHome({ token, user }) {
           </div>
         )}
       </div>
+
+      {!resumeId && (
+        <div className="empty-state-card glass-card">
+          <div className="empty-state-icon">🚀</div>
+          <h3>Ready to boost your career?</h3>
+          <p>Upload your resume to get an instant ATS score, job recommendations, and start your AI mock interviews!</p>
+        </div>
+      )}
 
       {analysis && (
         <div className="results-grid">
@@ -235,11 +281,13 @@ function Dashboard({ token, user }) {
         </Link>
       </nav>
       <div className="dashboard-content">
-        <Routes>
-          <Route path="/" element={<DashboardHome token={token} user={user} />} />
-          <Route path="/features" element={<Phase2Features token={token} />} />
-          <Route path="/analytics" element={<Phase3Features token={token} />} />
-        </Routes>
+        <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}><div className="spinner"></div></div>}>
+          <Routes>
+            <Route path="/" element={<DashboardHome token={token} user={user} />} />
+            <Route path="/features" element={<Phase2Features token={token} />} />
+            <Route path="/analytics" element={<Phase3Features token={token} />} />
+          </Routes>
+        </Suspense>
       </div>
     </div>
   );

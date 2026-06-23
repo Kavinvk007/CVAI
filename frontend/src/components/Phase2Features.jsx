@@ -57,8 +57,12 @@ function CompareResumes({ token }) {
   useEffect(() => {
     api.get(`/user/resumes`)
       .then(res => setResumes(res.data))
-      .catch(err => console.log(err));
-  }, [token]);
+      .catch(err => {
+        if (err.response?.status !== 401) {
+          addToast("Failed to fetch resumes", "error");
+        }
+      });
+  }, [token, addToast]);
 
   const toggleSelect = (id) => {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -147,15 +151,27 @@ function JobRecommendations({ token, resumeId }) {
         {loading && <span className="spinner spinner-sm"></span>}
         {loading ? 'Generating...' : 'Get Recommendations'}
       </button>
-      {data?.roles && (
+      {loading && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {[1, 2, 3].map(i => (
+            <div key={i} className="glass-card" style={{ padding: '1.5rem' }}>
+              <div className="skeleton-loader skeleton-text title"></div>
+              <div className="skeleton-loader skeleton-text"></div>
+              <div className="skeleton-loader skeleton-text short"></div>
+              <div className="skeleton-loader skeleton-box" style={{ marginTop: '1rem' }}></div>
+            </div>
+          ))}
+        </div>
+      )}
+      {!loading && data?.roles && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {data.roles.map((r, i) => (
-            <div key={i} style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
-              <h4>{r.title} ({r.match_percentage}%)</h4>
+            <div key={i} className="glass-card" style={{ padding: '1.5rem' }}>
+              <h4>{r.title} <span style={{ color: 'var(--primary)' }}>({r.match_percentage}%)</span></h4>
               <p style={{ margin: '0.5rem 0', color: 'var(--text-muted)' }}>{r.reason}</p>
-              <h5>Learning Roadmap:</h5>
-              <ul style={{ paddingLeft: '1.5rem', color: 'var(--text-muted)' }}>
-                {(r.learning_roadmap || []).map((step, j) => <li key={j}>{step}</li>)}
+              <h5 style={{ marginTop: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>Learning Roadmap:</h5>
+              <ul style={{ paddingLeft: '1.5rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                {(r.learning_roadmap || []).map((step, j) => <li key={j} style={{ marginBottom: '0.25rem' }}>{step}</li>)}
               </ul>
             </div>
           ))}
@@ -285,7 +301,16 @@ function MockInterview({ token, resumeId }) {
         {loading ? 'Evaluating...' : 'Submit Answer'}
       </button>
 
-      {feedback && (
+      {loading && (
+        <div style={{ marginTop: '1rem', padding: '1.5rem', background: 'rgba(99, 102, 241, 0.05)', borderRadius: '8px', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+          <div className="skeleton-loader skeleton-text title"></div>
+          <div className="skeleton-loader skeleton-text"></div>
+          <div className="skeleton-loader skeleton-text short"></div>
+          <div className="skeleton-loader skeleton-box" style={{ marginTop: '1rem', height: '60px' }}></div>
+        </div>
+      )}
+
+      {!loading && feedback && (
         <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '8px', border: '1px solid var(--primary)' }}>
           <h4>Score: {feedback.score}/10</h4>
           <div style={{ margin: '1rem 0' }}>
