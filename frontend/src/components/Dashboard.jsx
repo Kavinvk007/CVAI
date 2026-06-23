@@ -84,6 +84,17 @@ function DashboardHome({ token, user }) {
     }
   };
 
+  const getScoreStatus = (score) => {
+    if (score >= 80) return { text: "Excellent Match", color: "var(--success)" };
+    if (score >= 60) return { text: "Good Match", color: "#eab308" };
+    return { text: "Needs Improvement", color: "var(--danger)" };
+  };
+
+  const getSuggestionsList = (text) => {
+    if (!text) return [];
+    return text.split('. ').filter(s => s.trim().length > 0).map(s => s.endsWith('.') ? s : s + '.');
+  };
+
   return (
     <div>
       <div className="dashboard-header">
@@ -114,28 +125,81 @@ function DashboardHome({ token, user }) {
       </div>
 
       {analysis && (
-        <div className="results-grid" style={{ display: 'grid' }}>
-          <div className="card score-card">
-            <h3>ATS Score</h3>
-            <div className="score-circle"><span>{analysis.ats_score}</span>%</div>
+        <div className="results-grid">
+          <div className="card score-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+            <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-main)' }}>ATS Score</h3>
+            <div className="modern-score-circle">
+              <span className="score-value">{analysis.ats_score}</span>
+              <span className="score-symbol">%</span>
+            </div>
+            {(() => {
+              const status = getScoreStatus(analysis.ats_score);
+              return (
+                <div style={{ marginTop: '1.5rem' }}>
+                  <span style={{ 
+                    padding: '0.5rem 1rem', 
+                    borderRadius: '99px', 
+                    backgroundColor: `${status.color}20`, 
+                    color: status.color,
+                    fontWeight: '600',
+                    fontSize: '0.9rem'
+                  }}>
+                    {status.text}
+                  </span>
+                </div>
+              );
+            })()}
           </div>
-          <div className="card details-card">
-            <h3>Extracted Skills</h3>
-            <div className="tags-container">{(analysis.skills || []).map((s, i) => <span key={i}>{s}</span>)}</div>
-            <h3 style={{ marginTop: '1rem' }}>Missing Skills</h3>
-            <div className="tags-container error-tags">{(analysis.missing_skills || []).map((s, i) => <span key={i}>{s}</span>)}</div>
+          
+          <div className="card details-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div>
+              <h3 style={{ marginBottom: '1rem', color: 'var(--text-main)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>Extracted Skills</h3>
+              <div className="modern-tags-container">
+                {(analysis.skills || []).length > 0 ? (
+                  analysis.skills.map((s, i) => <span key={i} className="skill-pill">{s}</span>)
+                ) : (
+                  <p style={{ color: 'var(--text-muted)' }}>No skills detected.</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h3 style={{ marginBottom: '1rem', color: 'var(--text-main)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>Missing Skills</h3>
+              <div className="modern-tags-container">
+                {(analysis.missing_skills || []).length > 0 ? (
+                  analysis.missing_skills.map((s, i) => <span key={i} className="missing-skill-pill">{s}</span>)
+                ) : (
+                  <p style={{ color: 'var(--success)', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.2rem' }}>✨</span> No major missing skills detected.
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="card ai-suggestions-card">
-            <h3>AI Suggestions</h3>
-            <p>{analysis.suggestions || 'No suggestions.'}</p>
+          
+          <div className="card ai-suggestions-card" style={{ gridColumn: '1 / -1' }}>
+            <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-main)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem' }}>AI Suggestions</h3>
+            <ul className="suggestions-list">
+              {getSuggestionsList(analysis.suggestions).length > 0 ? (
+                getSuggestionsList(analysis.suggestions).map((item, idx) => (
+                  <li key={idx}>
+                    <span className="bullet-icon">💡</span>
+                    <span>{item}</span>
+                  </li>
+                ))
+              ) : (
+                <p style={{ color: 'var(--text-muted)' }}>No suggestions available.</p>
+              )}
+            </ul>
           </div>
-          <div className="card chat-card">
-            <h3>Resume Chatbot</h3>
+          
+          <div className="card chat-card" style={{ gridColumn: '1 / -1' }}>
+            <h3 style={{ marginBottom: '1rem', color: 'var(--text-main)' }}>Resume Chatbot</h3>
             <div className="chat-window" ref={chatWindowRef}>
               {chatMessages.map((msg, i) => <div key={i} className={`chat-msg ${msg.sender}`}>{msg.text}</div>)}
             </div>
             <div className="chat-input-area">
-              <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyPress={e => e.key === 'Enter' && handleSendChat()} />
+              <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyPress={e => e.key === 'Enter' && handleSendChat()} placeholder="Ask a question..." />
               <button onClick={handleSendChat} className="btn primary-btn">Send</button>
             </div>
           </div>
