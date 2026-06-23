@@ -149,7 +149,23 @@ function JobRecommendations({ token, resumeId }) {
     setLoading(true);
     try {
       const res = await api.get(`/api/v2/recommend-jobs/${resumeId}`);
-      setData(res.data);
+      console.log("Job Recommendations Response:", res.data);
+      
+      // Normalize data in case Gemini uses different keys
+      let normalizedRoles = [];
+      if (res.data.roles && Array.isArray(res.data.roles)) {
+        normalizedRoles = res.data.roles;
+      } else if (res.data.recommendations && Array.isArray(res.data.recommendations)) {
+        normalizedRoles = res.data.recommendations;
+      } else if (res.data.jobs && Array.isArray(res.data.jobs)) {
+        normalizedRoles = res.data.jobs;
+      } else if (res.data.results && Array.isArray(res.data.results)) {
+        normalizedRoles = res.data.results;
+      } else if (Array.isArray(res.data)) {
+        normalizedRoles = res.data;
+      }
+
+      setData({ ...res.data, roles: normalizedRoles });
     } catch (err) {
       const errorMsg = err.response?.data?.detail || err.message || '';
       if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {
