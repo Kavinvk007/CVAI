@@ -14,9 +14,6 @@ function Landing() {
         </Link>
       </header>
 
-      <footer style={{ textAlign: 'center', padding: '20px 0', color: 'rgba(255,255,255,0.6)', fontSize: '14px', borderTop: '1px solid rgba(255,255,255,0.08)', background: 'transparent', marginTop: '4rem' }}>
-        © 2026 CVAI. All Rights Reserved.
-      </footer>
     </>
   );
 }
