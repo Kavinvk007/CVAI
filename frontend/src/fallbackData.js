@@ -3,7 +3,7 @@ export const mockAtsAnalysis = {
   ats_score: 87,
   skills: ['React', 'JavaScript', 'Node.js', 'Python', 'Docker', 'FastAPI'],
   missing_skills: ['Kubernetes', 'GraphQL', 'AWS'],
-  suggestions: "Ensure you quantify your achievements with specific metrics (e.g. 'Increased performance by 20%'). Highlight your experience with cloud deployments to cover the AWS missing skill. Consider adding a brief summary tailored to Senior Frontend roles."
+  suggestions: "Ensure you quantify your achievements with specific metrics such as percentage increases. Highlight your experience with cloud deployments to cover the AWS missing skill. Consider adding a brief summary tailored to Senior Frontend roles. Include links to live deployments or GitHub repositories for your portfolio projects. Emphasize your leadership or mentorship experience to strengthen your profile for senior positions."
 };
 
 export const mockCompareResumes = {
