@@ -28,7 +28,21 @@ function Auth({ onLogin }) {
         const formData = new FormData();
         formData.append('username', email);
         formData.append('password', password);
-        const res = await axios.post(`${API_BASE}/auth/login`, formData);
+        const res = await axios.post(`${API_BASE}/auth/login`, formData, {
+          validateStatus: status => status < 500
+        });
+        
+        if (res.status === 401) {
+          addToast('Incorrect email or password', 'error');
+          setIsLoading(false);
+          return;
+        }
+
+        if (res.status !== 200) {
+          addToast(`Login failed: ${res.data?.detail || res.statusText}`, 'error');
+          setIsLoading(false);
+          return;
+        }
         
         // Clear forms and state
         setEmail('');

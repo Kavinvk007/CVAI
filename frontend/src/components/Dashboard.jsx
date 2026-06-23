@@ -59,7 +59,12 @@ function DashboardHome({ token, user }) {
       });
       setAnalysis(res.data);
       if (res.data.error) {
-        addToast('Warning: Backend Error: ' + res.data.error, 'error');
+        if (res.data.error.toLowerCase().includes('quota') || res.data.error.toLowerCase().includes('unavailable') || res.data.error.toLowerCase().includes('demand')) {
+          addToast("AI quota limit reached. Showing demo results for preview.", "error");
+          setAnalysis(mockAtsAnalysis);
+        } else {
+          addToast('Warning: Backend Error: ' + res.data.error, 'error');
+        }
       } else {
         addToast('Analysis Complete!', 'success');
       }

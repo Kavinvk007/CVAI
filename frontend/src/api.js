@@ -22,7 +22,11 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       // Clear local storage and redirect to login
       localStorage.clear();
-      window.location.href = '/auth';
+      if (window.location.pathname !== '/auth') {
+        window.location.href = '/auth';
+      }
+      // Return a pending promise to swallow the error and prevent React/Axios console spam
+      return new Promise(() => {});
     }
     return Promise.reject(error);
   }
