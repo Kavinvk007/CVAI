@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { useToast } from './Toast';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -12,11 +13,15 @@ function Auth({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorFields, setErrorFields] = useState([]);
+
+  const { addToast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    if (isLoading) return;
+    setIsLoading(true);
 
     try {
       if (mode === 'login') {
@@ -24,10 +29,16 @@ function Auth({ onLogin }) {
         formData.append('username', email);
         formData.append('password', password);
         const res = await axios.post(`${API_BASE}/auth/login`, formData);
+        
+        // Clear forms and state
+        setEmail('');
+        setPassword('');
+        addToast('Login successful!', 'success');
+        
         onLogin(res.data);
       } else {
         await axios.post(`${API_BASE}/auth/register`, { name, email, password });
-        // Switch to login after successful register
+        addToast('Registration successful! Please login.', 'success');
         setMode('login');
         setSearchParams({ mode: 'login' });
         setPassword('');
@@ -37,26 +48,47 @@ function Auth({ onLogin }) {
         if (err.response.data && err.response.data.detail) {
           const d = err.response.data.detail;
           if (Array.isArray(d)) {
-            // Pydantic validation error
-            setError(d.map(e => e.msg).join(", "));
+            const fields = [];
+            const messages = [];
+            d.forEach(e => {
+              const field = e.loc[e.loc.length - 1];
+              fields.push(field);
+              let msg = e.msg;
+              if (msg.startsWith('Value error, ')) {
+                msg = msg.replace('Value error, ', '');
+              } else if (e.type === 'missing') {
+                msg = `Missing required field: ${field}`;
+              }
+              messages.push(msg);
+            });
+            setErrorFields(fields);
+            addToast(messages.join(" | "), 'error');
           } else {
-            setError(d);
+            if (d === 'Email already registered') {
+              addToast("An account with this email already exists.", "error");
+              setErrorFields(['email']);
+            } else {
+              addToast(d, 'error');
+            }
           }
         } else {
-          setError(`Server Error: ${err.response.statusText}`);
+          addToast(`Server Error: ${err.response.statusText}`, 'error');
         }
       } else if (err.request) {
-        setError('Network Error: Could not reach the backend server.');
+        addToast('Network Error: Could not reach the backend server.', 'error');
       } else {
-        setError('Error: ' + err.message);
+        addToast('Error: ' + err.message, 'error');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const toggleMode = (newMode) => {
     setMode(newMode);
     setSearchParams({ mode: newMode });
-    setError('');
+    setPassword('');
+    setErrorFields([]);
   };
 
   return (
@@ -69,7 +101,9 @@ function Auth({ onLogin }) {
             placeholder="Full Name" 
             required 
             value={name} 
-            onChange={e => setName(e.target.value)} 
+            onChange={e => { setName(e.target.value); setErrorFields(prev => prev.filter(f => f !== 'name')); }} 
+            disabled={isLoading}
+            style={errorFields.includes('name') ? { border: '2px solid var(--danger)' } : {}}
           />
         )}
         <input 
@@ -77,17 +111,21 @@ function Auth({ onLogin }) {
           placeholder="Email" 
           required 
           value={email} 
-          onChange={e => setEmail(e.target.value)} 
+          onChange={e => { setEmail(e.target.value); setErrorFields(prev => prev.filter(f => f !== 'email')); }} 
+          disabled={isLoading}
+          style={errorFields.includes('email') ? { border: '2px solid var(--danger)' } : {}}
         />
         <input 
           type="password" 
           placeholder="Password" 
           required 
           value={password} 
-          onChange={e => setPassword(e.target.value)} 
+          onChange={e => { setPassword(e.target.value); setErrorFields(prev => prev.filter(f => f !== 'password')); }} 
+          disabled={isLoading}
+          style={errorFields.includes('password') ? { border: '2px solid var(--danger)' } : {}}
         />
-        <button type="submit" className="btn primary-btn">
-          {mode === 'login' ? 'Login' : 'Register'}
+        <button type="submit" className="btn primary-btn" disabled={isLoading}>
+          {isLoading ? 'Processing...' : (mode === 'login' ? 'Login' : 'Register')}
         </button>
         
         {mode === 'login' ? (
@@ -96,7 +134,6 @@ function Auth({ onLogin }) {
           <p>Already have an account? <a href="#" onClick={(e) => { e.preventDefault(); toggleMode('login'); }}>Login here</a></p>
         )}
       </form>
-      {error && <div className="error-msg">{error}</div>}
     </div>
   );
 }
