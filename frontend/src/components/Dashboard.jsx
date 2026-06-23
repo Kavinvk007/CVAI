@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../api';
 import { useToast } from './Toast';
+import { Sparkles, BrainCircuit, Rocket, Lightbulb, FileText, Zap, Briefcase, Mic, FileUp, CheckCircle2 } from 'lucide-react';
 
 const Phase2Features = lazy(() => import('./Phase2Features'));
 const Phase3Features = lazy(() => import('./Phase3Features'));
@@ -99,34 +100,37 @@ function DashboardHome({ token, user }) {
   return (
     <div>
       <div className="dashboard-header" style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem' }}>Welcome back, <span className="logo">{user?.name}</span> 👋</h2>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          Welcome back, <span className="logo">{user?.name}</span> 
+          <BrainCircuit size={36} style={{ color: 'var(--primary)', filter: 'drop-shadow(0 0 10px rgba(139, 92, 246, 0.6))' }} />
+        </h2>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Resume Analysis Dashboard</p>
       </div>
 
       <div className="stats-grid">
         <div className="glass-card stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--primary)' }}>📄</div>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--primary)' }}><FileText size={24} /></div>
           <div className="stat-content">
             <h4>Resumes Uploaded</h4>
             <p className="stat-value">12</p>
           </div>
         </div>
         <div className="glass-card stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--success)' }}>⚡</div>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--success)' }}><Zap size={24} /></div>
           <div className="stat-content">
             <h4>ATS Analyses</h4>
             <p className="stat-value">34</p>
           </div>
         </div>
         <div className="glass-card stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(59, 130, 246, 0.2)', color: 'var(--secondary)' }}>💼</div>
+          <div className="stat-icon" style={{ background: 'rgba(59, 130, 246, 0.2)', color: 'var(--secondary)' }}><Briefcase size={24} /></div>
           <div className="stat-content">
             <h4>Job Recs Generated</h4>
             <p className="stat-value">8</p>
           </div>
         </div>
         <div className="glass-card stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b' }}>🎤</div>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b' }}><Mic size={24} /></div>
           <div className="stat-content">
             <h4>Mock Interviews</h4>
             <p className="stat-value">5</p>
@@ -140,7 +144,7 @@ function DashboardHome({ token, user }) {
             <div className="file-upload-wrapper">
               <input type="file" id="resume-upload" accept=".pdf" onChange={e => setFile(e.target.files[0])} required className="hidden-file-input" />
               <label htmlFor="resume-upload" className="file-upload-label">
-                <div className="upload-icon">📁</div>
+                <FileUp size={48} className="upload-icon" />
                 <span className="upload-text">{file ? file.name : 'Drag & drop or click to select PDF'}</span>
               </label>
             </div>
@@ -164,7 +168,7 @@ function DashboardHome({ token, user }) {
 
       {!resumeId && (
         <div className="empty-state-card glass-card">
-          <div className="empty-state-icon">🚀</div>
+          <Rocket size={64} className="empty-state-icon" style={{ color: 'var(--primary)' }} />
           <h3>Ready to boost your career?</h3>
           <p>Upload your resume to get an instant ATS score, job recommendations, and start your AI mock interviews!</p>
         </div>
@@ -216,7 +220,7 @@ function DashboardHome({ token, user }) {
                   analysis.missing_skills.map((s, i) => <span key={i} className="missing-skill-pill">{s}</span>)
                 ) : (
                   <p style={{ color: 'var(--success)', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '1.2rem' }}>✨</span> No major missing skills detected.
+                    <CheckCircle2 size={20} color="var(--success)" /> No major missing skills detected.
                   </p>
                 )}
               </div>
@@ -229,7 +233,7 @@ function DashboardHome({ token, user }) {
               {getSuggestionsList(analysis.suggestions).length > 0 ? (
                 getSuggestionsList(analysis.suggestions).map((item, idx) => (
                   <li key={idx}>
-                    <span className="bullet-icon">💡</span>
+                    <span className="bullet-icon"><Lightbulb size={20} color="var(--primary)" /></span>
                     <span>{item}</span>
                   </li>
                 ))
