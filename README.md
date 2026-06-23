@@ -22,15 +22,11 @@ CVAI is a full-stack AI-powered Resume Analyzer and Interview Assistant built us
 
 ## Screenshots
 
-### Landing Page
-
-### Analytics Dashboard
-
-### ATS Analysis
-
-### Resume Chatbot
-
-### Job Recommendations
+assets/screenshots/landing-page.png
+assets/screenshots/analytics-dashboard.png
+assets/screenshots/ats-analysis.png
+assets/screenshots/resume-chatbot.png
+assets/screenshots/job-recommendations.png
 
 ---
 
