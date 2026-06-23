@@ -77,7 +77,17 @@ function CompareResumes({ token }) {
     setLoading(true);
     try {
       const res = await api.post(`/api/v2/compare`, { resume_ids: selectedIds, job_description: jd });
-      setData(res.data);
+      if (res.data.error) {
+        const errMsg = res.data.error.toLowerCase();
+        if (errMsg.includes('quota') || errMsg.includes('unavailable') || errMsg.includes('demand') || errMsg.includes('exceeded') || errMsg.includes('rate limit') || errMsg.includes('429')) {
+          addToast("AI quota limit reached. Showing demo results for preview.", "error");
+          setData(mockCompareResumes);
+        } else {
+          addToast('Warning: Backend Error: ' + res.data.error, 'error');
+        }
+      } else {
+        setData(res.data);
+      }
     } catch (err) {
       const errorMsg = err.response?.data?.detail || err.message || '';
       if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {
@@ -151,6 +161,18 @@ function JobRecommendations({ token, resumeId }) {
       const res = await api.get(`/api/v2/recommend-jobs/${resumeId}`);
       console.log("Job Recommendations Response:", res.data);
       
+      if (res.data.error) {
+        const errMsg = res.data.error.toLowerCase();
+        if (errMsg.includes('quota') || errMsg.includes('unavailable') || errMsg.includes('demand') || errMsg.includes('exceeded') || errMsg.includes('rate limit') || errMsg.includes('429')) {
+          addToast("AI quota limit reached. Showing demo results for preview.", "error");
+          setData(mockJobRecommendations);
+        } else {
+          addToast('Warning: Backend Error: ' + res.data.error, 'error');
+        }
+        setLoading(false);
+        return;
+      }
+
       // Normalize data in case Gemini uses different keys
       let normalizedRoles = [];
       if (res.data.roles && Array.isArray(res.data.roles)) {
@@ -231,7 +253,17 @@ function CoverLetter({ token, resumeId }) {
     setLoading(true);
     try {
       const res = await api.post(`/api/v2/cover-letter`, { resume_id: resumeId, job_description: jd });
-      setLetter(res.data.cover_letter);
+      if (res.data.error) {
+        const errMsg = res.data.error.toLowerCase();
+        if (errMsg.includes('quota') || errMsg.includes('unavailable') || errMsg.includes('demand') || errMsg.includes('exceeded') || errMsg.includes('rate limit') || errMsg.includes('429')) {
+          addToast("AI quota limit reached. Showing demo results for preview.", "error");
+          setLetter(mockCoverLetter.cover_letter);
+        } else {
+          addToast('Warning: Backend Error: ' + res.data.error, 'error');
+        }
+      } else {
+        setLetter(res.data.cover_letter);
+      }
     } catch (err) {
       const errorMsg = err.response?.data?.detail || err.message || '';
       if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {
@@ -277,7 +309,17 @@ function LinkedInAnalyzer({ token }) {
     setLoading(true);
     try {
       const res = await api.post(`/api/v2/linkedin-analyzer`, { profile_text: profile });
-      setData(res.data);
+      if (res.data.error) {
+        const errMsg = res.data.error.toLowerCase();
+        if (errMsg.includes('quota') || errMsg.includes('unavailable') || errMsg.includes('demand') || errMsg.includes('exceeded') || errMsg.includes('rate limit') || errMsg.includes('429')) {
+          addToast("AI quota limit reached. Showing demo results for preview.", "error");
+          setData(mockLinkedInAnalyzer);
+        } else {
+          addToast('Warning: Backend Error: ' + res.data.error, 'error');
+        }
+      } else {
+        setData(res.data);
+      }
     } catch (err) {
       const errorMsg = err.response?.data?.detail || err.message || '';
       if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {
@@ -339,7 +381,17 @@ function MockInterview({ token, resumeId }) {
       const res = await api.post(`/api/v2/mock-interview/evaluate`, {
         resume_id: resumeId, job_description: jd, question, answer
       });
-      setFeedback(res.data);
+      if (res.data.error) {
+        const errMsg = res.data.error.toLowerCase();
+        if (errMsg.includes('quota') || errMsg.includes('unavailable') || errMsg.includes('demand') || errMsg.includes('exceeded') || errMsg.includes('rate limit') || errMsg.includes('429')) {
+          addToast("AI quota limit reached. Showing demo results for preview.", "error");
+          setFeedback(mockMockInterview);
+        } else {
+          addToast('Warning: Backend Error: ' + res.data.error, 'error');
+        }
+      } else {
+        setFeedback(res.data);
+      }
     } catch (err) {
       const errorMsg = err.response?.data?.detail || err.message || '';
       if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {

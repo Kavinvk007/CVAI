@@ -31,21 +31,21 @@ export const mockJobRecommendations = {
   is_demo: true,
   roles: [
     {
-      title: "Senior Full Stack Engineer",
-      match_percentage: 88,
-      reason: "Your background in React and Python perfectly matches the typical requirements for this role. You also have strong system design skills.",
+      title: "Full Stack Developer",
+      match_percentage: 92,
+      reason: "Your background perfectly matches the typical requirements for this role. You also have strong system design skills.",
       learning_roadmap: ["Learn Advanced React Patterns", "Master Kubernetes deployments", "Study System Design"]
     },
     {
-      title: "Frontend Tech Lead",
-      match_percentage: 82,
-      reason: "You have deep experience in UI development and have mentored junior developers, making this a logical next step.",
+      title: "Cloud Engineer",
+      match_percentage: 88,
+      reason: "You have deep experience in architecture and have mentored junior developers, making this a logical next step.",
       learning_roadmap: ["Practice Engineering Management", "Learn Webpack internals", "Focus on Web Accessibility"]
     },
     {
-      title: "Backend Engineer",
-      match_percentage: 75,
-      reason: "While you have full-stack skills, your FastAPI and Node.js experience is strong enough for pure backend roles.",
+      title: "AI Engineer",
+      match_percentage: 85,
+      reason: "While you have full-stack skills, your experience is strong enough for AI roles.",
       learning_roadmap: ["Deep dive into PostgreSQL optimization", "Learn advanced caching strategies"]
     }
   ]
