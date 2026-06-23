@@ -26,7 +26,23 @@ def run_verification():
     print("--- 1. Verifying Gemini Connection ---")
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-3.5-flash')
+        
+        models = list(genai.list_models())
+        gen_models = [m.name for m in models if 'generateContent' in m.supported_generation_methods]
+        selected_model_name = None
+        for pref in ["models/gemini-2.5-flash", "models/gemini-2.0-flash"]:
+            if pref in gen_models:
+                selected_model_name = pref
+                break
+        if not selected_model_name and gen_models:
+            selected_model_name = gen_models[0]
+            
+        if not selected_model_name:
+            print("❌ No valid generateContent models found.")
+            return
+
+        print(f"Using model: {selected_model_name}")
+        model = genai.GenerativeModel(selected_model_name)
         res = model.generate_content("Reply with exactly the word: 'CONNECTED'")
         if "CONNECTED" in res.text:
             print("✅ Connection Successful.")

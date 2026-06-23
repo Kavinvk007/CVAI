@@ -14,7 +14,31 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash') # Recommended fast model
+    try:
+        models = list(genai.list_models())
+        available_models = [m.name for m in models]
+        logger.info(f"Available Gemini models: {available_models}")
+        
+        gen_models = [m.name for m in models if 'generateContent' in m.supported_generation_methods]
+        
+        selected_model_name = None
+        for pref in ["models/gemini-2.5-flash", "models/gemini-2.0-flash"]:
+            if pref in gen_models:
+                selected_model_name = pref
+                break
+                
+        if not selected_model_name and gen_models:
+            selected_model_name = gen_models[0]
+            
+        if selected_model_name:
+            logger.info(f"Using Gemini model: {selected_model_name}")
+            model = genai.GenerativeModel(selected_model_name)
+        else:
+            logger.warning("No generateContent models found.")
+            model = None
+    except Exception as e:
+        logger.error(f"Error initializing Gemini models: {e}")
+        model = None
 else:
     model = None
     logger.warning("Warning: GEMINI_API_KEY is not set.")
