@@ -3,6 +3,7 @@ import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom'
 import api from '../api';
 import { useToast } from './Toast';
 import { Sparkles, BrainCircuit, Rocket, Lightbulb, FileText, Zap, Briefcase, Mic, FileUp, CheckCircle2 } from 'lucide-react';
+import { mockAtsAnalysis } from '../fallbackData';
 
 const Phase2Features = lazy(() => import('./Phase2Features'));
 const Phase3Features = lazy(() => import('./Phase3Features'));
@@ -63,7 +64,13 @@ function DashboardHome({ token, user }) {
         addToast('Analysis Complete!', 'success');
       }
     } catch (err) {
-      addToast('Analysis failed: ' + (err.response?.data?.detail || err.message), 'error');
+      const errorMsg = err.response?.data?.detail || err.message || '';
+      if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {
+        addToast("AI quota limit reached. Showing demo results for preview.", "error");
+        setAnalysis(mockAtsAnalysis);
+      } else {
+        addToast('Analysis failed: ' + errorMsg, 'error');
+      }
     }
     setIsAnalyzing(false);
   };
@@ -175,7 +182,12 @@ function DashboardHome({ token, user }) {
       )}
 
       {analysis && (
-        <div className="results-grid">
+        <div className="results-grid" style={{ position: 'relative' }}>
+          {analysis.is_demo && (
+            <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: 'var(--danger)', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 10, boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>
+              Demo Preview
+            </div>
+          )}
           <div className="card score-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
             <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-main)' }}>ATS Score</h3>
             <div className="modern-score-circle">

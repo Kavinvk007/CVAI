@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
 import { useToast } from './Toast';
+import { mockCompareResumes, mockJobRecommendations, mockCoverLetter, mockLinkedInAnalyzer, mockMockInterview } from '../fallbackData';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 const API_V2 = `${API_BASE}/api/v2`;
@@ -78,7 +79,13 @@ function CompareResumes({ token }) {
       const res = await api.post(`/api/v2/compare`, { resume_ids: selectedIds, job_description: jd });
       setData(res.data);
     } catch (err) {
-      addToast("Error comparing resumes: " + (err.response?.data?.detail || err.message), "error");
+      const errorMsg = err.response?.data?.detail || err.message || '';
+      if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {
+        addToast("AI quota limit reached. Showing demo results for preview.", "error");
+        setData(mockCompareResumes);
+      } else {
+        addToast("Error comparing resumes: " + errorMsg, "error");
+      }
     }
     setLoading(false);
   };
@@ -102,7 +109,12 @@ function CompareResumes({ token }) {
       </button>
 
       {data && !data.error && (
-        <div style={{ marginTop: '2rem' }}>
+        <div style={{ marginTop: '2rem', position: 'relative' }}>
+          {data.is_demo && (
+            <div style={{ position: 'absolute', top: '-10px', right: '0', background: 'var(--danger)', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 10 }}>
+              Demo Preview
+            </div>
+          )}
           <h4>Summary</h4>
           <p style={{ margin: '1rem 0' }}>{data.summary}</p>
           <h4>Rankings</h4>
@@ -139,7 +151,13 @@ function JobRecommendations({ token, resumeId }) {
       const res = await api.get(`/api/v2/recommend-jobs/${resumeId}`);
       setData(res.data);
     } catch (err) {
-      addToast("Error fetching recommendations", "error");
+      const errorMsg = err.response?.data?.detail || err.message || '';
+      if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {
+        addToast("AI quota limit reached. Showing demo results for preview.", "error");
+        setData(mockJobRecommendations);
+      } else {
+        addToast("Error fetching recommendations: " + errorMsg, "error");
+      }
     }
     setLoading(false);
   };
@@ -164,7 +182,12 @@ function JobRecommendations({ token, resumeId }) {
         </div>
       )}
       {!loading && data?.roles && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
+          {data.is_demo && (
+            <div style={{ position: 'absolute', top: '-10px', right: '0', background: 'var(--danger)', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 10 }}>
+              Demo Preview
+            </div>
+          )}
           {data.roles.map((r, i) => (
             <div key={i} className="glass-card" style={{ padding: '1.5rem' }}>
               <h4>{r.title} <span style={{ color: 'var(--primary)' }}>({r.match_percentage}%)</span></h4>
@@ -194,7 +217,13 @@ function CoverLetter({ token, resumeId }) {
       const res = await api.post(`/api/v2/cover-letter`, { resume_id: resumeId, job_description: jd });
       setLetter(res.data.cover_letter);
     } catch (err) {
-      addToast("Error generating cover letter", "error");
+      const errorMsg = err.response?.data?.detail || err.message || '';
+      if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {
+        addToast("AI quota limit reached. Showing demo results for preview.", "error");
+        setLetter(mockCoverLetter.cover_letter);
+      } else {
+        addToast("Error generating cover letter: " + errorMsg, "error");
+      }
     }
     setLoading(false);
   };
@@ -208,7 +237,12 @@ function CoverLetter({ token, resumeId }) {
         {loading ? 'Generating...' : 'Generate'}
       </button>
       {letter && (
-        <div style={{ marginTop: '1rem' }}>
+        <div style={{ marginTop: '1rem', position: 'relative' }}>
+          {letter === mockCoverLetter.cover_letter && (
+            <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'var(--danger)', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 10 }}>
+              Demo Preview
+            </div>
+          )}
           <textarea value={letter} readOnly rows="15" style={{ width: '100%', background: 'rgba(0,0,0,0.2)', color: 'white', padding: '1rem' }} />
         </div>
       )}
@@ -229,7 +263,13 @@ function LinkedInAnalyzer({ token }) {
       const res = await api.post(`/api/v2/linkedin-analyzer`, { profile_text: profile });
       setData(res.data);
     } catch (err) {
-      addToast("Error analyzing LinkedIn", "error");
+      const errorMsg = err.response?.data?.detail || err.message || '';
+      if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {
+        addToast("AI quota limit reached. Showing demo results for preview.", "error");
+        setData(mockLinkedInAnalyzer);
+      } else {
+        addToast("Error analyzing LinkedIn: " + errorMsg, "error");
+      }
     }
     setLoading(false);
   };
@@ -243,7 +283,12 @@ function LinkedInAnalyzer({ token }) {
         {loading ? 'Analyzing...' : 'Analyze Profile'}
       </button>
       {data && (
-        <div style={{ marginTop: '1rem' }}>
+        <div style={{ marginTop: '1rem', position: 'relative' }}>
+          {data.is_demo && (
+            <div style={{ position: 'absolute', top: '-10px', right: '0', background: 'var(--danger)', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 10 }}>
+              Demo Preview
+            </div>
+          )}
           <h4>Profile Strength: {data.profile_strength}%</h4>
           <div style={{ marginTop: '1rem' }}>
             <h5>Headline Suggestions</h5>
@@ -280,7 +325,13 @@ function MockInterview({ token, resumeId }) {
       });
       setFeedback(res.data);
     } catch (err) {
-      addToast("Error evaluating answer", "error");
+      const errorMsg = err.response?.data?.detail || err.message || '';
+      if (err.response?.status === 429 || errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exhausted')) {
+        addToast("AI quota limit reached. Showing demo results for preview.", "error");
+        setFeedback(mockMockInterview);
+      } else {
+        addToast("Error evaluating answer: " + errorMsg, "error");
+      }
     }
     setLoading(false);
   };
@@ -311,7 +362,12 @@ function MockInterview({ token, resumeId }) {
       )}
 
       {!loading && feedback && (
-        <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '8px', border: '1px solid var(--primary)' }}>
+        <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '8px', border: '1px solid var(--primary)', position: 'relative' }}>
+          {feedback.is_demo && (
+            <div style={{ position: 'absolute', top: '-10px', right: '10px', background: 'var(--danger)', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 10 }}>
+              Demo Preview
+            </div>
+          )}
           <h4>Score: {feedback.score}/10</h4>
           <div style={{ margin: '1rem 0' }}>
             <h5>Feedback:</h5>
